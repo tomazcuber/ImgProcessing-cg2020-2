@@ -25,8 +25,37 @@
             if(border == 'icrop'){
                 console.log("Cropping image borders");
                 transformedImg = nj.zeros([this.height - 2,this.width - 2]);
-            } else {
+            } else if(border == 'extend'){
+                
                 transformedImg = nj.zeros([this.height,this.width]);
+                let extendedImg = nj.zeros([this.height + 2, this.width + 2]);
+                
+                // Extende os cantos 
+                extendedImg.set(0,0,this.img.get(0,0));
+                extendedImg.set(0,extendedImg.shape[1],this.img.get(0,this.width));
+                extendedImg.set(extendedImg.shape[0],0,this.img.get(this.height, 0));
+                extendedImg.set(extendedImg.shape[0],extendedImg.shape[1], this.img.get(this.height,this.width));
+                
+                // Extende a primeira e última linha
+                for(let j = 0; j <= this.width; j++){
+                    extendedImg.set(0,j,this.img.get(0,j));
+                    extendedImg.set(extendedImg.shape[0],j,this.img.get(this.height,j));
+                }
+
+                // Extende a primeira e última coluna
+                for(let i = 0; i < this.height; i++){
+                    extendedImg.set(i, 0, this.img.get(i,0));
+                    extendedImg.set(i, extendedImg.shape[1], this.img.get(i,this.width));
+                }
+
+                // Copia a imagem para o centro da imagem extendida
+                for(let j = 0; j <= this.width; j++){
+                    for(let i = 0; i < this.height; i++){
+                        extendedImg.set(i+1,j+1,this.img.get(i,j));
+                    }
+                }
+                
+                this.img = extendedImg.clone();             
             }
 
             switch(this.kernel){
