@@ -45,6 +45,49 @@
                         }
                     }
                     break;
+
+                case "sobel":
+                    let derivedImgOnX = transformedImg.clone();
+                    let derivedImgOnY = transformedImg.clone();
+                    
+                    for(let i = 0; i < derivedImgOnX.shape[0]; i++){
+                        for(let j = 0; j < derivedImgOnX.shape[1]; j++){
+                            let convolutionResult = 0;
+                            
+                            for(let u = 0; u < 3; u++){
+                                for(let v = 0; v < 3; v++){
+                                    convolutionResult += this.img.get(u + i,v + j) * this.sobelXFilterKernel.get(u,v);
+                                }
+                            }
+                            derivedImgOnX.set(i,j,convolutionResult);
+                        }
+                    }
+
+                    for(let i = 0; i < derivedImgOnY.shape[0]; i++){
+                        for(let j = 0; j < derivedImgOnY.shape[1]; j++){
+                            let convolutionResult = 0;
+                            
+                            for(let u = 0; u < 3; u++){
+                                for(let v = 0; v < 3; v++){
+                                    convolutionResult += this.img.get(u + i,v + j) * this.sobelYFilterKernel.get(u,v);
+                                }
+                            }
+                            derivedImgOnY.set(i,j,convolutionResult);
+                        }
+                    }
+
+                    let gradientMagnitude = transformedImg.clone();
+                    
+                    for(let i = 0; i < transformedImg.shape[0]; i++){
+                        for(let j = 0; j < transformedImg.shape[1]; j++){
+
+                            gradientMagnitude = Math.sqrt(Math.pow(derivedImgOnX.get(i,j),2) + Math.pow(derivedImgOnY.get(i,j),2));
+
+                            transformedImg.set(i,j,gradientMagnitude);
+                        }
+                    }
+
+                    break;
                 default:
                     console.log("No filter to apply");
                     break;
@@ -57,6 +100,19 @@
         boxFilterKernel: nj.array([[1/9,1/9,1/9],
                                     [1/9,1/9,1/9],
                                     [1/9,1/9,1/9]]),
+
+        sobelXFilterKernel: nj.array([[-1,0,1], 
+                                      [-2,0,2],
+                                      [-1,0,1]]).multiply(1/8),
+
+        sobelYFilterKernel: nj.array([[1,2,1], 
+                                       [0,0,0],
+                                       [-1,-2,-1]]).multiply(1/8),
+
+        laplaceFilterKernel: nj.array([0,-1,0],
+                                      [-1,4,-1],
+                                      [0,-1,-1]).multiply(1/4),
+
 
         apply_xform: function()  {
             // Method to apply affine transform through inverse mapping (incomplete)
