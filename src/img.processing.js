@@ -21,8 +21,42 @@
             // Method to apply kernel over image (incomplete)
             // border: 'icrop' is for cropping image borders, 'extend' is for extending image border
             // You may create auxiliary functions/methods if you'd like
+            let transformedImg
+            if(border == 'icrop'){
+                console.log("Cropping image borders");
+                transformedImg = nj.zeros([this.height - 2,this.width - 2]);
+            } else {
+                transformedImg = nj.zeros([this.height,this.width]);
+            }
 
+            switch(this.kernel){
+                case "box":
+                    console.log("Applying box filter");
+                    for(let i = 0; i < transformedImg.shape[0]; i++){
+                        for(let j = 0; j < transformedImg.shape[1]; j++){
+                            let convolutionResult = 0;
+                            
+                            for(let u = 0; u < 3; u++){
+                                for(let v = 0; v < 3; v++){
+                                    convolutionResult += this.img.get(u + i,v + j) * this.boxFilterKernel.get(u,v);
+                                }
+                            }
+                            transformedImg.set(i,j,convolutionResult);
+                        }
+                    }
+                    break;
+                default:
+                    console.log("No filter to apply");
+                    break;
+            }
+
+            this.img = transformedImg;
+            console.log(this.img.shape);
         },
+
+        boxFilterKernel: nj.array([[1/9,1/9,1/9],
+                                    [1/9,1/9,1/9],
+                                    [1/9,1/9,1/9]]),
 
         apply_xform: function()  {
             // Method to apply affine transform through inverse mapping (incomplete)
