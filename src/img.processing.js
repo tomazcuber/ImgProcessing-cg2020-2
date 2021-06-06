@@ -117,6 +117,26 @@
                     }
 
                     break;
+
+                case "laplace":
+                    console.log("Applying laplace filter");
+
+                    for(let i = 0; i < transformedImg.shape[0]; i++){
+                        for(let j = 0; j < transformedImg.shape[1]; j++){
+                            let convolutionResult = 0;
+                            
+                            for(let u = 0; u < 3; u++){
+                                for(let v = 0; v < 3; v++){
+                                    convolutionResult += this.img.get(u + i,v + j) * this.laplaceFilterKernel.get(u,v);
+                                }
+                            }
+                            transformedImg.set(i,j,convolutionResult);
+                        }
+                    }
+                
+                
+                    break;
+
                 default:
                     console.log("No filter to apply");
                     break;
@@ -138,9 +158,9 @@
                                        [0,0,0],
                                        [-1,-2,-1]]).multiply(1/8),
 
-        laplaceFilterKernel: nj.array([0,-1,0],
+        laplaceFilterKernel: nj.array([[0,-1,0],
                                       [-1,4,-1],
-                                      [0,-1,-1]).multiply(1/4),
+                                      [0,-1,-1]]).multiply(1/4),
 
 
         apply_xform: function()  {
